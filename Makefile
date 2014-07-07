@@ -1,19 +1,20 @@
 CC=mcs
-OPTIONS=-pkg:dotnet -warnaserror+ -t:library
-LIBRARIES=
-SOURCES=$(wildcard *.cs)
-DLLOUTPUT=JobManager.dll
+OPTIONS=-pkg:dotnet -t:library #-warnaserror+
+LIBRARIES=$(wildcard lib/*.dll)
+
+SOURCES=$(wildcard src/*.cs)
+DLLNAME=JobManager.dll
+DLLOUTPUT=bin/$(DLLNAME)
 
 
+.PHONY: all tests clean
 
-.PHONY: clean
+all: $(DLLOUTPUT)
 
-all: construct_lib
-
-construct_lib: $(SOURCES)
-	@echo "SOURCES:: $(SOURCES)"
-	$(CC) $(OPTIONS) -out\:$(DLLOUTPUT) $(SOURCES)
+$(DLLOUTPUT): $(SOURCES)
+	@mkdir -p bin/
+	$(CC) $(OPTIONS) -lib\:$(LIBRARIES) -out\:$(DLLOUTPUT) $(SOURCES)
 
 clean:
-	rm -rf $(DLLOUTPUT)
+	@rm -rf $(DLLOUTPUT)
 
