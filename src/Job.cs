@@ -2,11 +2,13 @@ using JobManager;
 using JobManager.Date;
 using JobManager.Exceptions;
 
+using Newtonsoft.Json;
+
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace JobManager.Job {
+namespace JobManager {
    
     public abstract class Job {
 
@@ -14,13 +16,12 @@ namespace JobManager.Job {
         internal object _referenceToJobObject;
         internal string _name;
         internal string _id;
-
-        protected Func<int> _function;
-        protected DateTime _executionDate;
-        protected DateInterval _executionInterval;
-
+        internal Func<int> _function;
+        internal DateTime _executionDate;
+        internal DateInterval _executionInterval;
 
 
+        [JsonIgnore]
         public Manager ParentManager {
             get { return _parentManager; } 
             set {
@@ -34,6 +35,7 @@ namespace JobManager.Job {
             }
         }
 
+        [JsonIgnore]
         public object ReferenceToJobObject {
             get { return _referenceToJobObject; } 
             protected set {
@@ -44,7 +46,8 @@ namespace JobManager.Job {
             }
         }
 
-        protected Func<int> Function {
+        [JsonIgnore]
+        public Func<int> Function {
             get { return _function;  } 
             set { 
                 if (value == null) 
@@ -64,12 +67,12 @@ namespace JobManager.Job {
             protected set { _id = value; }
         }
 
-        protected DateTime ExecutionDate {
+        public DateTime ExecutionDate {
             get { return _executionDate;  } 
             set { _executionDate = value; }
         }
 
-        protected DateInterval ExecutionInterval {
+        public DateInterval ExecutionInterval {
             get { return _executionInterval;  } 
             set { _executionInterval = value; }
         }
@@ -99,12 +102,24 @@ namespace JobManager.Job {
         public void Execute() {
             try {
                 if (Function() == 0)
-                    throw new BadReturnedValueException( "Function returned 0.");
-            } catch(BadReturnedValueException brve) {
+                    throw new BadReturnedValueException("Function returned 0.");
+            } catch(BadReturnedValueException) {
                 throw; 
             } catch(Exception e) {
                 throw new ExecutionException("Error while running function.", e);
             }
+        }
+
+
+        public void ChangeToNextDate() {
+            ExecutionDate = 
+                ExecutionDate.AddYears(ExecutionInterval.Years)
+                             .AddMonths(ExecutionInterval.Months)
+                             .AddDays(ExecutionInterval.Days)
+                             .AddHours(ExecutionInterval.Hours)
+                             .AddMinutes(ExecutionInterval.Minutes)
+                             .AddSeconds(ExecutionInterval.Seconds)
+                             .AddMilliseconds(ExecutionInterval.Milliseconds);
         }
 
 
@@ -121,7 +136,8 @@ namespace JobManager.Job {
             if (!JobMethod.ReturnType.Equals(typeof(int))) {
                 throw new InvalidObjectException( 
                         "Type " + ObjectType.Name 
-                                + " does not contains 'JMExecute' function.");
+                                + " doesn't contain 'JMExecute'" 
+                                + " method returning an integer");
             }
 
             Function = 
@@ -140,10 +156,14 @@ namespace JobManager.Job {
 
     public sealed class UniqueJob : Job {
 
+        public UniqueJob() {
+
+        }
+
         public UniqueJob(string Id, object Obj, 
                 DateTime ExecutionDate, DateInterval Interval)
             : base(Id, Obj, ExecutionDate, Interval) {
-
+            this.Name = "UniqueJob";
         }
 
         public override bool IsRepeatable() {
@@ -154,11 +174,15 @@ namespace JobManager.Job {
 
 
     public sealed class RepeatableJob : Job {
+
+        public RepeatableJob() {
+        
+        }
         
         public RepeatableJob(string Id, object Obj, 
                 DateTime ExecutionDate, DateInterval Interval)
             : base(Id, Obj, ExecutionDate, Interval) {
-
+            this.Name = "RepeatableJob";
         }
     
         public override bool IsRepeatable() {
