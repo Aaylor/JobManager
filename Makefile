@@ -25,12 +25,14 @@ $(DLLOUTPUT): $(SOURCES)
 tests: $(DLLOUTPUT)
 	@echo "\n\n -- BUILDING TESTS --\n"
 	@cp $(DLLOUTPUT) tests
+	@cp $(LIBRARIES) tests
 	@$(foreach TESTFILE, $(TESTS), \
 		LP=`pwd` && cd tests && \
-		$(CC) -r:$(DLLNAME) $(TESTSOPT) $(TESTFILE) && \
+		$(CC) -r:$(DLLNAME) -r:$(notdir $(LIBRARIES)) $(TESTSOPT) $(TESTFILE) && \
 		LD_LIBRARY_PATH=\"tests\" mono $(TESTFILE:.cs=.exe) \
 		cp $(LP))
 	@rm tests/$(DLLNAME)
+	@rm tests/$(notdir $(LIBRARIES))	
 
 clean:
 	@rm -rf $(DLLOUTPUT)
