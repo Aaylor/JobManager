@@ -60,4 +60,23 @@ namespace JobManager.Exceptions {
         
     }
     
+
+
+    public class JobAlreadyExistsException : Exception {
+    
+        public JobAlreadyExistsException() {
+        
+        }
+
+        public JobAlreadyExistsException(string message)
+            : base(message) {
+            
+        }
+
+        public JobAlreadyExistsException(string message, Exception inner)
+            : base(message, inner) {
+            
+        }
+        
+    }
 }
