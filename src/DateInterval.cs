@@ -1,5 +1,9 @@
 namespace JobManager.Date {
 
+    /// <summary>
+    /// Simulate a time interval.
+    /// Usefull to how much time need a job between two execution.
+    /// </summary>
     public sealed class DateInterval {
 
         public int Years        = 0;

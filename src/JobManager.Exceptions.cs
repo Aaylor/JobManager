@@ -2,6 +2,9 @@ using System;
 
 namespace JobManager.Exceptions {
 
+    /// <summary>
+    /// Raised when a json data is incorrect.
+    /// </summary>
     public class InvalidObjectException : Exception {
 
         public InvalidObjectException() {
@@ -22,6 +25,9 @@ namespace JobManager.Exceptions {
 
 
 
+    /// <summary>
+    /// Raised when a job execution has returned 0.
+    /// </summary>
     public class BadReturnedValueException : Exception {
     
         public BadReturnedValueException() {
@@ -42,6 +48,9 @@ namespace JobManager.Exceptions {
 
 
 
+    /// <summary>
+    /// Raised when a job throw an exception.
+    /// </summary>
     public class ExecutionException : Exception {
     
         public ExecutionException() {
@@ -62,6 +71,9 @@ namespace JobManager.Exceptions {
     
 
 
+    /// <summary>
+    /// Raised when a job already exists in the list.
+    /// </summary>
     public class JobAlreadyExistsException : Exception {
     
         public JobAlreadyExistsException() {
