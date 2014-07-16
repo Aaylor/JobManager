@@ -337,7 +337,7 @@ namespace JobManager {
             Log = new LogWriter(LogPathToFile);
 
             JobTimer = new Timer(o => TimerTick(), new AutoResetEvent(true), 
-                    0, TimerInterval);
+                    10, TimerInterval);
         }
 
 
