@@ -222,6 +222,9 @@ namespace JobManager {
     /// Keep an abstraction to write logs (ie. size of log file, ...)
     internal sealed class LogWriter {
 
+        private static uint LOGSIZE = 
+            Convert.ToUInt32(Math.Pow(2.0, 16.0));
+
         /// <summary>
         /// Path to the log file.
         /// </summary>
@@ -231,34 +234,11 @@ namespace JobManager {
         }
 
         /// <summary>
-        /// The current Stream object to write into the logfile.
-        /// </summary>
-        private StreamWriter LogSw {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Keep in memory the FileStream (only usef for the StreamWriter
-        /// creation.
-        /// </summary>
-        private FileStream fs = null;
-
-
-        /// <summary>
         /// Construct the LogWriter with the given path.
         /// </summary>
         /// <param name="LogPath">Path to the logfile.</param>
         public LogWriter(string LogPath) {
             this.LogPath = LogPath;
-
-            fs = File.Open(LogPath, FileMode.Append, FileAccess.Write);
-            LogSw = new StreamWriter(fs);
-        }
-
-        ~LogWriter() {
-            fs.Close();
-            LogSw.Close();
         }
 
         /// <summary>
@@ -270,11 +250,27 @@ namespace JobManager {
         public void Write(string Title, string Body) {
             DateTime Now = DateTime.Now;
 
-            LogSw.Write(
-                Now + "\n" +
-                Title + "\n" +
-                Body + "\n\n"
-            );
+            string Message =
+                Now + 
+                Environment.NewLine +
+                Title + 
+                Environment.NewLine +
+                Body + 
+                Environment.NewLine +
+                Environment.NewLine;
+
+            string Text = "";
+
+            if (File.Exists(LogPath)) {
+                Text = File.ReadAllText(LogPath);
+            }
+
+            int size = Text.Length + Message.Length;
+            if (size > LOGSIZE) {
+                Text = Text.Substring(0, Text.Length - Message.Length);
+            }
+
+            File.WriteAllText(LogPath, Message + Text);
         }
 
 
