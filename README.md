@@ -12,7 +12,7 @@ This is a little JobManager in c#.
 
 Example, you want to write Hello every minute:
 
-```
+```c#
 using JobManager;
 using JobManager.Date;
 using System;
@@ -48,4 +48,28 @@ public class TestJob {
 	}
 
 }
+```
+
+The manager automatically save as a json structure every information needed to a job.
+It will reload a job if it already exists in the json file given.
+
+Example with the json structure given by the code above :
+
+```json
+[
+	{
+		"Name": "RepeatableJob",
+		"Id"  : "HelloJob1",
+		"ExecutionDate" : ...insert current date here...
+		"ExecutionInterval" : {
+			"Years"   	   : 0,
+			"Months"  	   : 0,
+			"Days"    	   : 0,
+			"Hours"   	   : 0,
+			"Minutes" 	   : 1,
+			"Seconds" 	   : 0,
+			"Milliseconds" : 0
+		}
+	}
+]
 ```
